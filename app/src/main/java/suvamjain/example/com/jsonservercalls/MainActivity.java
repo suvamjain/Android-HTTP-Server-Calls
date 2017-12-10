@@ -1,5 +1,6 @@
 package suvamjain.example.com.jsonservercalls;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -8,12 +9,15 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -26,8 +30,11 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView mac,output;
+    TextView mac;
     EditText reg_no;
+    Dialog myDialog;
+    FloatingActionButton fab;
+    String out;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -35,9 +42,11 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myDialog = new Dialog(MainActivity.this);
 
         mac   =  (TextView)findViewById(R.id.mac);
-        output   =  (TextView)findViewById(R.id.opt);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+//        output   =  (TextView)findViewById(R.id.opt);
         reg_no =  (EditText)findViewById(R.id.regno);
 
         Button get =(Button)findViewById(R.id.get);
@@ -63,10 +72,40 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
 
-                    Toast.makeText(MainActivity.this,"Please enter the last 4 digits of your Registeration Number",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this,"Please enter the last 4 digits of your Registeration Number",Toast.LENGTH_SHORT).show();
+                    Snackbar.make(v,"Please enter the last 4 digits of your Reg No.",Snackbar.LENGTH_SHORT).show();
                     return;
                 }
 
+            }
+        });
+    }
+
+    public void animate(View v) {
+
+        TextView txtclose,output;
+        myDialog.setContentView(R.layout.custompopup);
+        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        output =(TextView)myDialog.findViewById(R.id.opt);
+        output.setText(out);
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                fab.clearAnimation();
+            }
+        });
+        fab.clearAnimation();
+        myDialog.show();
+
+    }
+
+    public void reset(View view) {
+        view.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                reg_no.setText("");
+                fab.setVisibility(v.GONE);
             }
         });
     }
@@ -80,8 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPreExecute() {
             // NOTE: You can call UI Element here.
-            //UI Element
-            output.setText("");
+//            output.setText("");
             Dialog.setMessage("Connecting to Server...");
             Dialog.show();
         }
@@ -110,17 +148,27 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(Void unused) {
             // NOTE: You can call UI Element here.
-
             // Close progress dialog
             Dialog.dismiss();
 
+            final Animation myAnim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.bounce);
+
+            // Use bounce interpolator with amplitude 0.2 and frequency 20
+            MyBounceInterpolator interpolator = new MyBounceInterpolator(0.5, 50);
+            myAnim.setInterpolator(interpolator);
+            fab.setVisibility(View.VISIBLE);
+            fab.startAnimation(myAnim);
+
+
             if (Error != null) {
 
-                output.setText("Error is : " + Error);
+               //output.setText("Error is : " + Error);
+                out = "Error is : " + Error;
 
             } else {
 
-                output.setText("" + SetServerString);
+                //output.setText("" + SetServerString);
+                out = "" + SetServerString;
 
             }
         }
