@@ -1,14 +1,15 @@
 # Android-HTTP-Server-Calls
-This apps makes a call to server by passing 2 parameters using HttpGet() method and fetches a string response from the server and displays it in the app
+
 
 Assignment -2: JSON server calls App
 -----------------------------------------
 
-This application makes call to a json server as http request through java to a http server made by Android Club along with 2 parameters-
+This apps makes a call to server by passing 2 parameters-
 - Registration number
 - Mac Address of Device
+ using HttpGet() method and fetches a string/json response.
 
-Once the arguments are passed it waits for a json response from the server which will be stored in a json object and displayed accordingly on the screen of user's device.
+Once the response is received  it is stored in a json object and displayed accordingly on the screen of user's device.
 
 
 Developed By -
